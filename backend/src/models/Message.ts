@@ -7,6 +7,10 @@ export const MessageSchema = new Schema<IMessage>(
 			type: String,
 			required: true,
 		},
+		username: {
+			type: String,
+			required: true,
+		},
 		message: {
 			type: String,
 			required: true,

@@ -1,7 +1,13 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
+import bcrypt from "bcryptjs";
 import { IUser } from "@chat-app/shared/types.js";
 
-export const UserSchema = new Schema<IUser>(
+// 1. Extend the shared interface to add the comparePassword method for the backend
+export interface IUserWithMethods extends Omit<IUser, "_id">, Document {
+	comparePassword(candidatePassword: string): Promise<boolean>;
+}
+
+export const UserSchema = new Schema<IUserWithMethods>(
 	{
 		username: {
 			type: String,
@@ -13,9 +19,8 @@ export const UserSchema = new Schema<IUser>(
 		password: {
 			type: String,
 			required: [true, "Password is required"],
-			select: false,
+			select: false, 
 		},
-
 		email: {
 			type: String,
 			required: [true, "Email is required"],
@@ -34,4 +39,23 @@ export const UserSchema = new Schema<IUser>(
 	},
 );
 
-export const User = model<IUser>("User", UserSchema);
+// 2. Hash password before saving
+UserSchema.pre<IUserWithMethods>("save", async function (next) {
+	if (!this.isModified("password")) {
+		return next();
+	}
+	try {
+		const salt = await bcrypt.genSalt(10);
+		this.password = await bcrypt.hash(this.password, salt);
+		next();
+	} catch (error) {
+		next(error as Error);
+	}
+});
+
+
+UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+	return bcrypt.compare(candidatePassword, this.password);
+};
+
+export const User = model<IUserWithMethods>("User", UserSchema);

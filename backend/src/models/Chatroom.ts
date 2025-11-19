@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
-import { IChatroom } from "@chat-app/shared/types.ts";
-import { MessageSchema } from "./Message.ts";
+import { IChatroom } from "@chat-app/shared/types.js";
+import { MessageSchema } from "./Message.js";
 
 export const ChatroomSchema = new Schema<IChatroom>(
 	{

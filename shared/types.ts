@@ -3,6 +3,8 @@ export interface IMessage {
 
 	userId: string;
 
+	username: string;
+
 	message: string;
 
 	date: Date;
