@@ -1,0 +1,6 @@
+{
+	"name": "@chat-app/shared",
+	"version": "1.0.0",
+	"description": "Shared TypeScript interfaces for frontend and backend",
+	"type": "module"
+}
