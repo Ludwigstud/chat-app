@@ -39,7 +39,7 @@ export const UserSchema = new Schema<IUserWithMethods>(
 	},
 );
 
-// 2. Hash password before saving
+//Hash password before saving
 UserSchema.pre<IUserWithMethods>("save", async function (next) {
 	if (!this.isModified("password")) {
 		return next();

@@ -84,7 +84,6 @@ export const sendMessage = async (req: Request, res: Response) => {
 	if (!message || !message.trim()) return res.status(400).json({ message: "Message empty." });
 
 	try {
-		// 1. Fetch the sender's username (Denormalization step)
 		const user = await User.findById(userId).select("username");
 
 		if (!user) {

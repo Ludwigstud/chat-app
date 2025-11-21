@@ -39,3 +39,22 @@ export interface IUser {
 
 	updatedAt?: Date;
 }
+
+export interface AuthResponse {
+	token: string;
+	user: {
+		id: string;
+		email: string;
+		username: string;
+	};
+}
+
+export interface LoginData {
+	email: string;
+
+	password: string;
+}
+
+export interface RegistrationData extends LoginData {
+	username: string;
+}
