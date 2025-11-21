@@ -12,7 +12,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         
         {/* Protected Routes */}
-        <Route path="/chat" element={<ChatLobby />} />
+        <Route path="/lobby" element={<ChatLobby />} />
         <Route path="/chat/:roomId" element={<ChatRoom />} />
       </Routes>
     </BrowserRouter>
@@ -21,4 +21,3 @@ function App() {
 
 export default App;
 
-<span className="text-blue-600 ... cursor-pointer">Sign up</span>

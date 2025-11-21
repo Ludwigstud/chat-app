@@ -5,6 +5,10 @@ export const getChatrooms = async (): Promise<IChatroom[]> => {
 	return api<IChatroom[]>("/chatrooms");
 };
 
+export const getChatroom = async (roomId: string): Promise<IChatroom> => {
+	return api<IChatroom>(`/chatrooms/${roomId}`);
+};
+
 export const createChatroom = async (name: string): Promise<IChatroom> => {
 	return api<IChatroom>("/chatrooms", {
 		method: "POST",

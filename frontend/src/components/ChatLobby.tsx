@@ -67,7 +67,7 @@ const ChatLobby = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-50 p-6 md:p-12">
-			<div className="max-w-6xl mx-auto">
+			<div className=" mx-auto">
 			
 				<div className="flex justify-between items-center mb-8 border-b pb-4">
 					<h1 className="text-3xl font-bold text-gray-800 tracking-tight">ChatGen Lobby</h1>

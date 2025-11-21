@@ -3,15 +3,19 @@ import { Chatroom } from "../models/Chatroom.js";
 import { User } from "../models/User.js";
 import { IMessage } from "@chat-app/shared/types.js";
 
-// Helper interface for Authenticated Requests
 interface AuthRequest extends Request {
 	userId?: string;
 }
 
-// --- 1. Get List of Rooms ---
+const isUserInRoom = (room: any, userId: string): boolean => {
+	return room.users.some((user: any) => {
+		const id = user._id ? user._id : user;
+		return id.toString() === userId;
+	});
+};
+
 export const getChatrooms = async (req: Request, res: Response) => {
 	try {
-		// Projection: Only fetch fields we need for the card view
 		const rooms = await Chatroom.find({}, "name _id users createdAt");
 		return res.status(200).json(rooms);
 	} catch (error) {
@@ -20,11 +24,11 @@ export const getChatrooms = async (req: Request, res: Response) => {
 	}
 };
 
-// --- 2. Get Single Room (NEW - Required for your frontend update) ---
 export const getChatroom = async (req: Request, res: Response) => {
 	try {
 		const { roomId } = req.params;
-		const room = await Chatroom.findById(roomId);
+
+		const room = await Chatroom.findById(roomId).populate("users", "username");
 
 		if (!room) {
 			return res.status(404).json({ message: "Chatroom not found" });
@@ -37,7 +41,6 @@ export const getChatroom = async (req: Request, res: Response) => {
 	}
 };
 
-// --- 3. Create Room ---
 export const createChatroom = async (req: Request, res: Response) => {
 	const userId = (req as AuthRequest).userId;
 	const { name } = req.body;
@@ -59,10 +62,8 @@ export const createChatroom = async (req: Request, res: Response) => {
 			chatLogs: [],
 		});
 
-		// Add room to user's list
 		await User.findByIdAndUpdate(userId, { $push: { chatrooms: newRoom._id } });
 
-		// Return the created resource directly
 		return res.status(201).json(newRoom);
 	} catch (error) {
 		console.error("Error creating chatroom:", error);
@@ -70,7 +71,6 @@ export const createChatroom = async (req: Request, res: Response) => {
 	}
 };
 
-// --- 4. Join Room ---
 export const joinChatroom = async (req: Request, res: Response) => {
 	const userId = (req as AuthRequest).userId;
 	const { roomId } = req.params;
@@ -81,22 +81,19 @@ export const joinChatroom = async (req: Request, res: Response) => {
 		const room = await Chatroom.findById(roomId);
 		if (!room) return res.status(404).json({ message: "Chatroom not found." });
 
-		// Idempotency: If already in room, just return success
-		if (room.users.includes(userId)) {
+		if (isUserInRoom(room, userId)) {
 			return res.status(200).json(room);
 		}
 
-		// Add user to room
 		const updatedRoom = await Chatroom.findByIdAndUpdate(
 			roomId,
 			{
 				$push: { users: userId },
 				$set: { updatedAt: new Date() },
 			},
-			{ new: true }, // Return updated doc
+			{ new: true },
 		);
 
-		// Add room to user
 		await User.findByIdAndUpdate(userId, { $push: { chatrooms: roomId } });
 
 		return res.status(200).json(updatedRoom);
@@ -106,7 +103,6 @@ export const joinChatroom = async (req: Request, res: Response) => {
 	}
 };
 
-// --- 5. Send Message ---
 export const sendMessage = async (req: Request, res: Response) => {
 	const userId = (req as AuthRequest).userId;
 	const { roomId } = req.params;
@@ -116,16 +112,16 @@ export const sendMessage = async (req: Request, res: Response) => {
 	if (!message || !message.trim()) return res.status(400).json({ message: "Message empty." });
 
 	try {
-		// Fetch strictly what is needed
 		const user = await User.findById(userId).select("username");
 		if (!user) return res.status(404).json({ message: "User not found." });
 
-		// Verify room membership
 		const room = await Chatroom.findById(roomId).select("users");
 		if (!room) return res.status(404).json({ message: "Chatroom not found." });
-		if (!room.users.includes(userId)) return res.status(403).json({ message: "Not a member." });
 
-		// Construct Message
+		if (!isUserInRoom(room, userId)) {
+			return res.status(403).json({ message: "Not a member." });
+		}
+
 		const newMessage: IMessage = {
 			userId: userId,
 			username: user.username,
@@ -133,16 +129,11 @@ export const sendMessage = async (req: Request, res: Response) => {
 			date: new Date(),
 		};
 
-		// Push to DB
-		// Note: In a production app with heavy load, use a separate Messages collection.
-		// For a hobby MERN app, embedding is fine.
 		await Chatroom.findByIdAndUpdate(roomId, {
 			$push: { chatLogs: newMessage },
 			$set: { updatedAt: newMessage.date },
 		});
 
-		// REFACTOR FIX: Return the Message object directly!
-		// Old code returned { message: "Sent", data: ... } which breaks frontend typing.
 		return res.status(201).json(newMessage);
 	} catch (error) {
 		console.error("Error sending message:", error);
@@ -150,7 +141,6 @@ export const sendMessage = async (req: Request, res: Response) => {
 	}
 };
 
-// --- 6. Get Messages ---
 export const getRoomMessages = async (req: Request, res: Response) => {
 	const userId = (req as AuthRequest).userId;
 	const { roomId } = req.params;
@@ -158,13 +148,10 @@ export const getRoomMessages = async (req: Request, res: Response) => {
 	if (!userId) return res.status(401).json({ message: "Authentication required." });
 
 	try {
-		// Optimization: Only fetch chatLogs and users array (for auth check)
 		const room = await Chatroom.findById(roomId).select("chatLogs users");
-
 		if (!room) return res.status(404).json({ message: "Chatroom not found." });
 
-		// Security: Ensure user is actually in the room
-		if (!room.users.includes(userId)) {
+		if (!isUserInRoom(room, userId)) {
 			return res.status(403).json({ message: "Access denied. Join the room first." });
 		}
 
