@@ -2,7 +2,6 @@ import { Schema, model, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import { IUser } from "@chat-app/shared/types.js";
 
-// 1. Extend the shared interface to add the comparePassword method for the backend
 export interface IUserWithMethods extends Omit<IUser, "_id">, Document {
 	comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -16,11 +15,6 @@ export const UserSchema = new Schema<IUserWithMethods>(
 			trim: true,
 			minlength: [3, "Username must be at least 3 characters long"],
 		},
-		password: {
-			type: String,
-			required: [true, "Password is required"],
-			select: false, 
-		},
 		email: {
 			type: String,
 			required: [true, "Email is required"],
@@ -29,17 +23,24 @@ export const UserSchema = new Schema<IUserWithMethods>(
 			lowercase: true,
 			match: [/.+@.+\..+/, "Please enter a valid email address"],
 		},
-		chatrooms: {
-			type: [String],
-			default: [],
+		password: {
+			type: String,
+			required: [true, "Password is required"],
+			select: false,
 		},
+		chatrooms: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Chatroom",
+				default: [],
+			},
+		],
 	},
 	{
 		timestamps: true,
 	},
 );
 
-//Hash password before saving
 UserSchema.pre<IUserWithMethods>("save", async function (next) {
 	if (!this.isModified("password")) {
 		return next();
@@ -52,7 +53,6 @@ UserSchema.pre<IUserWithMethods>("save", async function (next) {
 		next(error as Error);
 	}
 });
-
 
 UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
 	return bcrypt.compare(candidatePassword, this.password);

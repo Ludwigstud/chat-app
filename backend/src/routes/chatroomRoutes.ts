@@ -2,6 +2,7 @@ import express from "express";
 import {
 	createChatroom,
 	getChatrooms,
+	getChatroom,
 	joinChatroom,
 	sendMessage,
 	getRoomMessages,
@@ -10,16 +11,11 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-//Apply middleware to all routes
-router.use(protect);
+router.route("/").get(protect, getChatrooms).post(protect, createChatroom);
 
-// ROOM MANAGEMENT
-router.post("/", createChatroom);
-router.get("/", getChatrooms);
-router.post("/join/:roomId", joinChatroom);
+router.get("/:roomId", protect, getChatroom);
 
-// MESSAGE MANAGEMENT
-router.post("/:roomId/messages", sendMessage);
-router.get("/:roomId/messages", getRoomMessages);
+router.post("/join/:roomId", protect, joinChatroom);
+router.route("/:roomId/messages").get(protect, getRoomMessages).post(protect, sendMessage);
 
 export default router;
