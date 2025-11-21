@@ -109,7 +109,7 @@ const ChatRoom = () => {
 						<p className="text-xs text-gray-400">ID: {roomId?.slice(-6)}</p>
 					</div>
 					<button
-						onClick={() => navigate("/chat")}
+						onClick={() => navigate("/lobby")}
 						className="text-gray-400 hover:text-white text-sm font-medium transition-colors">
 						&larr; Lobby
 					</button>

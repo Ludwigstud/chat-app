@@ -65,7 +65,7 @@ const ChatLobby = () => {
 		<div className="min-h-screen bg-gray-900 p-6 md:p-12">
 			<div className="max-w-6xl mx-auto">
 				<div className="flex justify-between items-center mb-8 border-b border-gray-700 pb-4">
-					<h1 className="text-3xl font-bold text-white tracking-tight">ChatGen Lobby</h1>
+					<h1 className="text-3xl font-bold text-white tracking-tight">Welcome to the chatrooms</h1>
 					<button
 						onClick={handleLogout}
 						className="text-sm font-semibold text-red-400 hover:text-red-300 border border-red-900/50 bg-red-900/20 px-4 py-2 rounded transition-colors">
@@ -82,7 +82,7 @@ const ChatLobby = () => {
 							type="text"
 							value={newRoomName}
 							onChange={(e) => setNewRoomName(e.target.value)}
-							placeholder="Room name (e.g. 'Frontend Heroes')"
+							placeholder="Room name"
 							className="flex-1 bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder-gray-400"
 							disabled={loading}
 						/>
