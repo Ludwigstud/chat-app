@@ -1,6 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import bcrypt from "bcryptjs";
-import { IUser } from "@chat-app/shared/types.js";
+import { IUser } from "../types/shared.js";
 
 export interface IUserWithMethods extends Omit<IUser, "_id">, Document {
 	comparePassword(candidatePassword: string): Promise<boolean>;

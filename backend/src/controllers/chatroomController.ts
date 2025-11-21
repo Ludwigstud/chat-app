@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Chatroom } from "../models/Chatroom.js";
 import { User } from "../models/User.js";
-import { IMessage } from "@chat-app/shared/types.js";
+import { IMessage } from "../types/shared.js";
 
 interface AuthRequest extends Request {
 	userId?: string;
@@ -16,7 +16,7 @@ const isUserInRoom = (room: any, userId: string): boolean => {
 
 export const getChatrooms = async (req: Request, res: Response) => {
 	try {
-		const rooms = await Chatroom.find({}, "name _id users createdAt");
+		const rooms = await Chatroom.find({}, "name _id users createdAt chatLogs");
 		return res.status(200).json(rooms);
 	} catch (error) {
 		console.error("Error fetching chatrooms:", error);
