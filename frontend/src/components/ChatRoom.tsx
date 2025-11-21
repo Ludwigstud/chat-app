@@ -13,7 +13,6 @@ const ChatRoom = () => {
 	const { roomId } = useParams<{ roomId: string }>();
 	const navigate = useNavigate();
 
-	// State
 	const [messages, setMessages] = useState<IMessage[]>([]);
 	const [newMessage, setNewMessage] = useState("");
 	const [roomName, setRoomName] = useState<string>("");
@@ -44,7 +43,6 @@ const ChatRoom = () => {
 		if (!roomId) return;
 		try {
 			const data = await getRoomMessages(roomId);
-
 			setMessages((prev) => {
 				if (JSON.stringify(prev) === JSON.stringify(data)) return prev;
 				return data;
@@ -69,7 +67,6 @@ const ChatRoom = () => {
 	useEffect(() => {
 		const container = chatContainerRef.current;
 		if (!container) return;
-
 		const isNearBottom =
 			container.scrollHeight - container.scrollTop - container.clientHeight < 200;
 
@@ -100,27 +97,28 @@ const ChatRoom = () => {
 	};
 
 	return (
-		<div className="flex h-screen w-full bg-gray-100">
+		<div className="flex h-screen w-full bg-gray-900">
 			<div className="flex-1 flex flex-col h-full min-w-0">
-				<div className="bg-white border-b shadow-sm px-6 py-4 flex justify-between items-center z-10 w-full">
+				{/* Header */}
+				<div className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center z-10 w-full shadow-sm">
 					<div>
-						<h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+						<h2 className="text-xl font-bold text-gray-100 flex items-center gap-2">
 							<span className="text-blue-500">#</span>
 							{roomName || "Chat Room"}
 						</h2>
 						<p className="text-xs text-gray-400">ID: {roomId?.slice(-6)}</p>
 					</div>
 					<button
-						onClick={() => navigate("/lobby")}
-						className="text-gray-500 hover:text-gray-800 text-sm font-medium transition-colors">
+						onClick={() => navigate("/chat")}
+						className="text-gray-400 hover:text-white text-sm font-medium transition-colors">
 						&larr; Lobby
 					</button>
 				</div>
 
 				<div
 					ref={chatContainerRef}
-					className="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col w-full">
-					{loading && <div className="text-center text-gray-400 mt-10">Loading messages...</div>}
+					className="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col w-full bg-gray-900 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+					{loading && <div className="text-center text-gray-500 mt-10">Loading messages...</div>}
 
 					{!loading &&
 						messages.map((msg, index) => {
@@ -136,16 +134,16 @@ const ChatRoom = () => {
 										className={`px-4 py-2 shadow-sm ${
 											isMe
 												? "bg-blue-600 text-white rounded-2xl rounded-tr-none"
-												: "bg-white text-gray-800 border border-gray-200 rounded-2xl rounded-tl-none"
+												: "bg-gray-800 text-gray-100 border border-gray-700 rounded-2xl rounded-tl-none"
 										}`}>
 										{!isMe && (
-											<span className="block text-[10px] font-bold text-blue-600 mb-1 opacity-80">
+											<span className="block text-[10px] font-bold text-blue-400 mb-1 opacity-90">
 												{msg.username}
 											</span>
 										)}
 										<p className="text-sm leading-relaxed">{msg.message}</p>
 									</div>
-									<span className="text-[10px] text-gray-400 mt-1 px-1">
+									<span className="text-[10px] text-gray-500 mt-1 px-1">
 										{new Date(msg.date).toLocaleTimeString([], {
 											hour: "2-digit",
 											minute: "2-digit",
@@ -157,7 +155,7 @@ const ChatRoom = () => {
 					<div ref={messagesEndRef} />
 				</div>
 
-				<div className="bg-white p-4 border-t w-full">
+				<div className="bg-gray-800 p-4 border-t border-gray-700 w-full">
 					<form
 						onSubmit={handleSendMessage}
 						className="flex gap-3 w-full max-w-5xl mx-auto">
@@ -166,7 +164,7 @@ const ChatRoom = () => {
 							value={newMessage}
 							onChange={(e) => setNewMessage(e.target.value)}
 							placeholder={`Message #${roomName || "room"}...`}
-							className="flex-1 border border-gray-300 rounded-full px-5 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 transition-all"
+							className="flex-1 bg-gray-700 border border-gray-600 text-white rounded-full px-5 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 transition-all"
 							disabled={sending}
 						/>
 						<button
@@ -179,37 +177,37 @@ const ChatRoom = () => {
 				</div>
 			</div>
 
-			<div className="hidden md:flex flex-col w-64 bg-white border-l border-gray-200 shadow-xl z-20">
-				<div className="p-4 border-b border-gray-100 bg-gray-50">
-					<h3 className="font-bold text-gray-700 text-sm uppercase tracking-wide">
+			<div className="hidden md:flex flex-col w-64 bg-gray-800 border-l border-gray-700 shadow-xl z-20">
+				<div className="p-4 border-b border-gray-700 bg-gray-800/50">
+					<h3 className="font-bold text-gray-300 text-sm uppercase tracking-wide">
 						Members — {members.length}
 					</h3>
 				</div>
-				<div className="flex-1 overflow-y-auto p-4 space-y-4">
+				<div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-600">
 					{members.map((member) => (
 						<div
 							key={member._id}
 							className="flex items-center gap-3">
-							<div className="w-8 h-8 rounded-full bg-linear-to-tr from-blue-100 to-blue-200 flex items-center justify-center text-blue-600 font-bold text-xs shadow-sm border border-blue-100">
+							<div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-blue-400 font-bold text-xs shadow-sm border border-gray-600">
 								{member.username.substring(0, 2).toUpperCase()}
 							</div>
 
 							<div className="flex flex-col">
 								<span
 									className={`text-sm font-medium ${
-										member._id === currentUserId ? "text-blue-600" : "text-gray-700"
+										member._id === currentUserId ? "text-blue-400" : "text-gray-300"
 									}`}>
 									{member.username}
 								</span>
 								{member._id === currentUserId && (
-									<span className="text-[10px] text-gray-400 font-medium">You</span>
+									<span className="text-[10px] text-gray-500 font-medium">You</span>
 								)}
 							</div>
 						</div>
 					))}
 
 					{members.length === 0 && (
-						<p className="text-sm text-gray-400 italic text-center mt-4">Loading members...</p>
+						<p className="text-sm text-gray-500 italic text-center mt-4">Loading members...</p>
 					)}
 				</div>
 			</div>
