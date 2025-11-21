@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
 import { User } from "../models/User.js";
 import * as jose from "jose";
-// IMPORT the secret from your central config to ensure it matches the middleware
 import { secret } from "../config/jwtConfig.js"; 
 
 // --- Helper: Generate Token ---
-// This keeps your code DRY (Don't Repeat Yourself)
 const generateToken = async (user: any) => {
     return new jose.SignJWT({ id: user._id.toString(), username: user.username })
         .setProtectedHeader({ alg: "HS256" })
@@ -31,7 +29,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
         const user = await User.create({ username, email, password });
 
-        // Use helper
+       
         const token = await generateToken(user);
 
         res.status(201).json({
@@ -55,7 +53,7 @@ export const loginUser = async (req: Request, res: Response) => {
         const user = await User.findOne({ email }).select("+password");
 
         if (user && (await user.comparePassword(password))) {
-            // Use helper
+         
             const token = await generateToken(user);
 
             res.json({

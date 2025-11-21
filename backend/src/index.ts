@@ -16,7 +16,7 @@ connectDB();
 
 app.use(
 	cors({
-		origin: process.env.FRONTEND_URL || "*", // Allow the env var OR allow all
+		origin: process.env.FRONTEND_URL || "*",
 		credentials: true,
 	}),
 );
