@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { IMessage } from "@chat-app/shared/types.js";
+import { IMessage } from "../types/shared.js";
 
 export const MessageSchema = new Schema<IMessage>(
 	{
