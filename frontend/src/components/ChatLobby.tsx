@@ -65,7 +65,9 @@ const ChatLobby = () => {
 		<div className="min-h-screen bg-gray-900 p-6 md:p-12">
 			<div className="max-w-6xl mx-auto">
 				<div className="flex justify-between items-center mb-8 border-b border-gray-700 pb-4">
-					<h1 className="text-3xl font-bold text-white tracking-tight">Welcome to the chatrooms</h1>
+					<h1 className="text-3xl font-bold text-white tracking-tight">
+						Welcome to the Community Hub
+					</h1>
 					<button
 						onClick={handleLogout}
 						className="text-sm font-semibold text-red-400 hover:text-red-300 border border-red-900/50 bg-red-900/20 px-4 py-2 rounded transition-colors">
@@ -74,7 +76,7 @@ const ChatLobby = () => {
 				</div>
 
 				<div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 mb-10">
-					<h2 className="text-lg font-semibold mb-4 text-gray-200">Create a Workspace</h2>
+					<h2 className="text-lg font-semibold mb-4 text-gray-200">Create a Room </h2>
 					<form
 						onSubmit={handleCreateRoom}
 						className="flex flex-col sm:flex-row gap-3">
